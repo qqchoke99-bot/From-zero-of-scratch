@@ -54,7 +54,7 @@ std::string f(float value) {
     return std::to_string(value);
 }
 
-}
+} // namespace
 
 void registerWithLauncher() {
     auto& mod = CameraOverhaulModule::get();
@@ -69,6 +69,10 @@ void registerWithLauncher() {
            .onConfigChanged(onConfigChanged);
 
     using pl::modmenu::ConfigType;
+
+    // Same config() shape as original CameraOverhaul only:
+    //   Toggle:  (id, label, Toggle, default)
+    //   Slider:  (id, label, SliderFloat, default, min, max, dependsOn)
 
     builder.config("enablePitch", "Pitch", ConfigType::Toggle,
                    mod.m_enablePitch ? "true" : "false");
@@ -108,13 +112,19 @@ void registerWithLauncher() {
     builder.config("transitionSmoothing", "Overall Smoothness", ConfigType::SliderFloat,
                    f(mod.m_transitionSmoothing), "0.2", "4.0");
 
-    (void)builder.config("enableHeadBob", "Head Bob", ConfigType::Toggle,
-                   mod.m_enableHeadBob ? "true" : "false")
-        .config("headBobMode", "Head Bob Mode", ConfigType::Radio, mod.m_headBobMode,
-                "default", "bodycam", "comfort", "custom")
-        .config("headBobStrength", "Head Bob Strength", ConfigType::SliderFloat,
-               f(mod.m_headBobStrength), "0.0", "3.0", "enableHeadBob")
-        .config("headBobStepRate", "Step Rate", ConfigType::SliderFloat,
-               f(mod.m_headBobStepRate), "0.25", "2.5", "enableHeadBob")
-        .registerModule();
+    // Head bob — Toggle + Slider only (no Radio: PL has no matching overload)
+    builder.config("enableHeadBob", "Head Bob", ConfigType::Toggle,
+                   mod.m_enableHeadBob ? "true" : "false");
+    builder.config("headBobStrength", "Head Bob Strength", ConfigType::SliderFloat,
+                   f(mod.m_headBobStrength), "0.0", "3.0", "enableHeadBob");
+    builder.config("headBobStepRate", "Step Rate", ConfigType::SliderFloat,
+                   f(mod.m_headBobStepRate), "0.25", "2.5", "enableHeadBob");
+    builder.config("headBobSmoothHz", "Head Bob Smooth Hz", ConfigType::SliderFloat,
+                   f(mod.m_headBobSmoothHz), "0.25", "6.0", "enableHeadBob");
+    builder.config("headBobDamping", "Head Bob Damping", ConfigType::SliderFloat,
+                   f(mod.m_headBobDamping), "0.1", "3.0", "enableHeadBob");
+
+    // Mode (default/bodycam/comfort/custom) → edit config.json:
+    //   "headBobMode": "bodycam"
+    builder.registerModule();
 }

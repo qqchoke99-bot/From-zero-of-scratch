@@ -112,9 +112,17 @@ void registerWithLauncher() {
     builder.config("transitionSmoothing", "Overall Smoothness", ConfigType::SliderFloat,
                    f(mod.m_transitionSmoothing), "0.2", "4.0");
 
-    // Head bob — Toggle + Slider only (no Radio: PL has no matching overload)
+    // Head bob
+    // Radio API (from pl/ModMenu.hpp):
+    //   config(key, name, type, defaultValue, minValue, maxValue, dependsOn)
+    // For Radio, option list goes in minValue as comma-separated values.
     builder.config("enableHeadBob", "Head Bob", ConfigType::Toggle,
                    mod.m_enableHeadBob ? "true" : "false");
+    builder.config("headBobMode", "Head Bob Mode", ConfigType::Radio,
+                   mod.m_headBobMode.empty() ? "bodycam" : mod.m_headBobMode,
+                   "default,bodycam,comfort,custom",
+                   "",
+                   "enableHeadBob");
     builder.config("headBobStrength", "Head Bob Strength", ConfigType::SliderFloat,
                    f(mod.m_headBobStrength), "0.0", "3.0", "enableHeadBob");
     builder.config("headBobStepRate", "Step Rate", ConfigType::SliderFloat,
@@ -124,7 +132,5 @@ void registerWithLauncher() {
     builder.config("headBobDamping", "Head Bob Damping", ConfigType::SliderFloat,
                    f(mod.m_headBobDamping), "0.1", "3.0", "enableHeadBob");
 
-    // Mode (default/bodycam/comfort/custom) → edit config.json:
-    //   "headBobMode": "bodycam"
     builder.registerModule();
 }

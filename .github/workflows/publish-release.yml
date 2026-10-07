@@ -1,0 +1,98 @@
+name: Publish release
+
+# Push a tag like v1.2.0 in this (private) repo to build the .levipack
+# and publish it to the public DrukisMC/CameraOverhaul-Releases repo,
+# which is what LeviModHub reads. Use an annotated tag whose message
+# is the changelog — it becomes the GitHub release notes.
+#
+# Requires a RELEASE_TOKEN secret (fine-grained PAT with Contents:
+# read+write on the public releases repo).
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+
+      - uses: nttld/setup-ndk@v1
+        id: ndk
+        with:
+          ndk-version: r28c
+
+      - name: Build and package
+        run: |
+          xmake f -y -p android -a arm64-v8a -m release --ndk=${{ steps.ndk.outputs.ndk-path }}
+          xmake -y
+
+      - name: Publish to public release channel
+        env:
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          TAG: ${{ github.ref_name }}
+          PUBLIC_REPO: DrukisMC/CameraOverhaul-Releases
+          PACKAGE: build/android/arm64-v8a/release/CameraOverhaul.levipack
+          MOD_NAME: CameraOverhaul
+        run: |
+          set -euo pipefail
+          if [ -z "${RELEASE_TOKEN:-}" ]; then
+            echo "RELEASE_TOKEN secret is not set" >&2
+            exit 1
+          fi
+          VERSION="${TAG#v}"
+          if [ -z "$VERSION" ]; then
+            echo "Empty version from tag $TAG" >&2
+            exit 1
+          fi
+          if [ ! -f "$PACKAGE" ]; then
+            echo "Package not found: $PACKAGE" >&2
+            exit 1
+          fi
+          rm -rf public
+          git clone "https://x-access-token:${RELEASE_TOKEN}@github.com/${PUBLIC_REPO}.git" public
+          python3 - "$VERSION" <<'PY'
+          import json, sys
+          version = sys.argv[1]
+          path = "public/levimod.json"
+          with open(path, encoding="utf-8") as f:
+              data = json.load(f)
+          data["version"] = version
+          with open(path, "w", encoding="utf-8") as f:
+              json.dump(data, f, indent=2, ensure_ascii=False)
+              f.write("\n")
+          print("levimod.json version set to", version)
+          PY
+          git -C public -c user.name="github-actions[bot]" -c user.email="github-actions[bot]@users.noreply.github.com" add levimod.json
+          if git -C public diff --cached --quiet; then
+            echo "levimod.json already at $VERSION"
+          else
+            git -C public -c user.name="github-actions[bot]" -c user.email="github-actions[bot]@users.noreply.github.com" commit -m "chore: release $TAG"
+            git -C public push origin main
+          fi
+          if git -C public rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "tag $TAG already exists in public repo"
+          else
+            git -C public tag -a "$TAG" -m "$MOD_NAME $TAG"
+            git -C public push origin "$TAG"
+          fi
+          NOTES="$(git tag -l --format='%(contents)' "$TAG" 2>/dev/null || true)"
+          if [ -z "${NOTES// }" ]; then
+            NOTES="$MOD_NAME $TAG for Minecraft Bedrock 1.26.45.1 (LeviLauncher)."
+          fi
+          if GH_TOKEN="$RELEASE_TOKEN" gh release view "$TAG" --repo "$PUBLIC_REPO" >/dev/null 2>&1; then
+            echo "release $TAG exists, uploading asset"
+            GH_TOKEN="$RELEASE_TOKEN" gh release upload "$TAG" --repo "$PUBLIC_REPO" --clobber "$PACKAGE"
+          else
+            GH_TOKEN="$RELEASE_TOKEN" gh release create "$TAG" --repo "$PUBLIC_REPO" --title "$MOD_NAME $TAG" --notes "$NOTES" "$PACKAGE"
+          fi

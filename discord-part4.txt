@@ -1,0 +1,28 @@
+## Under the hood
+
+Game logic runs at **20 Hz** while rendering runs at **60 to 144 Hz**. In the first version the camera was calculated on the tick, so the same value was held for several frames and then jumped — that produced a stuttering feel.
+
+Now the tick only publishes a **target**, and a **critically damped spring** chases that target **once per rendered frame**.
+
+Measured result (20 Hz tick, 120 fps render):
+```
+before ..... 2.2743 degrees jump per frame
+after ...... 0.2916 degrees jump per frame   ->  87% reduction
+overshoot .. 0.000 degrees
+```
+
+The spring uses the exact closed-form solution instead of a step approximation, so it **cannot overshoot or blow up** if your frame rate drops. Tested at a steady 144 fps, a steady 30 fps, chaotic 12 to 144 fps, and across a half-second stall — stable in all of them.
+
+Rotation is applied through **quaternion multiplication**, never converting to Euler angles. That avoids gimbal lock when you look straight up or straight down.
+
+## Credits
+
+Inspired by the **[CameraOverhaul](https://www.curseforge.com/minecraft/mc-mods/cameraoverhaul)** mod by **Mirsario & Contributors**, made for Minecraft Java.
+
+This is an **independent reimplementation for Bedrock** — no code was copied. Both projects are GPL-3.0.
+
+## Beta notice
+
+Verified through builds, numeric simulation and static analysis, but it still has **limited real playtime**. If you hit a bug or anything feels off, reply here or open an issue on GitHub.
+
+**Not included yet:** screen shakes (explosions, lightning). The game's native shake queue only holds 2 entries where the effect needs 64, so it requires a custom implementation. Planned for a future release.

@@ -1,0 +1,33 @@
+## Health warning — please read first
+
+> ### This mod can cause motion sickness and nausea
+>
+> It directly alters camera movement. This can trigger **motion sickness**, nausea, dizziness, headaches, eye strain or disorientation — **even in people who have never experienced it before**.
+>
+> **Do not use it if you:**
+> - are sensitive to motion sickness or travel sickness
+> - have migraines, vertigo, or any vestibular disorder
+> - have photosensitive epilepsy or a history of seizures
+> - are pregnant, unwell, tired, or under the influence of alcohol
+>
+> **If you feel any discomfort, stop immediately.** Do not try to "push through it" — that usually makes it worse. Symptoms can persist for a while after you close the game.
+
+### How to use it safely
+
+**Start with the comfort preset, not the defaults:**
+
+```
+Overall Smoothness ......... 2.0
+Forward Pitch Intensity .... 0.4
+Vertical Pitch Intensity ... 0.3
+Turning Roll Intensity ..... 0.4
+Strafing Roll Intensity .... 0.4
+Sway Intensity ............. 0.5
+```
+
+- Play for **10 to 15 minutes** and see how you feel
+- Only raise values if you are completely comfortable, in steps of **0.2**
+- Take a break every 30 minutes
+- Play in a well-lit room, holding the device further from your face
+
+**Every effect can be turned off.** Set any intensity to `0`, or use the **Pitch**, **Roll** and **Idle Sway** toggles to disable whole groups. Turn off all three and the mod becomes completely inert.

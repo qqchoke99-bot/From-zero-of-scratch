@@ -1,0 +1,38 @@
+## What it does
+
+**Movement pitch**
+The camera tips forward as you accelerate and lifts as you fall, scaled by your real velocity.
+`~2.5 degrees sprinting` · `~13.5 degrees in an elytra dive` · `~6 degrees at terminal fall speed`
+
+**Turning roll**
+Turning banks the camera into the corner, like a pilot rolling through a turn. Strafing adds its own roll.
+`~11 degrees peak on hard turns`
+
+**Idle sway**
+Stand still and the camera begins to drift gently, like someone breathing. It fades out the instant you move.
+
+## Configuration
+
+**17 controls** in the LeviLauncher menu, organised into 3 groups. Disabling a group hides its controls.
+
+| Group | Controls |
+|---|---|
+| **Pitch** | Intensity and smoothing (forward + vertical) |
+| **Roll** | Intensity, accumulation, smoothing, strafing |
+| **Idle Sway** | Intensity, frequency, delay, fade in/out timings |
+
+**Overall Smoothness** adjusts the weight of the entire camera at once.
+`Higher` = heavier and more cinematic · `Lower` = snappier and more responsive
+
+**Suggested presets:**
+```
+Comfort ......... Smoothness 2.0 · Pitch 0.4 · Roll 0.4
+Default ......... everything at 1.0
+Cinematic ....... Smoothness 1.5 · Pitch 1.5 · Roll 1.4
+```
+
+## Is it safe on servers?
+
+**Yes.** The mod **never** changes your character's actual rotation — only the visual camera transform. No movement packet is modified and nothing is sent to the server. It is purely visual and entirely client-side.
+
+It gives no gameplay advantage: this is quality-of-life and visual polish, not a cheat.

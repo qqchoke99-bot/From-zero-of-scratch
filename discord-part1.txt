@@ -1,0 +1,16 @@
+# CameraOverhaul — v1.1.0-beta
+
+### Cinematic camera for Minecraft Bedrock
+
+> Your camera stops being a static block. It **tilts** when you accelerate, **rolls** when you turn, and **breathes** when you stand still.
+
+**Author:** `DrukisMC`
+**Platform:** Minecraft Bedrock (Android · arm64)
+**Loader:** LeviLauncher
+**License:** GPL-3.0
+
+## Download
+
+**[Download CameraOverhaul.levipack](https://www.mediafire.com/file/tya11c4gnalecrm/CameraOverhaul.levipack/file)**
+
+Source code: <https://github.com/DrukisMC/CameraOverhaul>

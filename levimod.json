@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "id": "realistic_headbob",
+  "version": "2.0.0-1.26.50",
+  "minecraft_versions": [
+    "1.26.50.1",
+    "1.26.52"
+  ],
+  "info": {
+    "name": "Realistic Head Bob",
+    "author": "port",
+    "description": "Step head-bob + cinematic pitch/roll/sway. Built on CameraOverhaul hooks for 1.26.50+.",
+    "homepage_url": "",
+    "icon": "assets/icon.png",
+    "tags": ["Visual", "Utility"]
+  },
+  "release_assets": {
+    "include": ["*.levipack"],
+    "labels": {
+      "RealisticHeadBob.levipack": "LeviPack"
+    }
+  }
+}
